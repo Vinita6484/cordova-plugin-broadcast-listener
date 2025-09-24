@@ -1,6 +1,8 @@
 package com.example.broadcast;
 
+import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Build;
 import org.apache.cordova.*;
 import org.json.JSONArray;
 
@@ -15,7 +17,12 @@ public class BroadcastPlugin extends CordovaPlugin {
             if (receiver == null) {
                 receiver = new IntentListener();
                 IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN");
-                cordova.getActivity().registerReceiver(receiver, filter);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    cordova.getActivity().registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                } else {
+                    cordova.getActivity().registerReceiver(receiver, filter);
+                }
             }
 
             PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
@@ -33,7 +40,7 @@ public class BroadcastPlugin extends CordovaPlugin {
             return true;
         }
 
-        return false; // Important: return false if action is unrecognized
+        return false;
     }
 
     @Override
