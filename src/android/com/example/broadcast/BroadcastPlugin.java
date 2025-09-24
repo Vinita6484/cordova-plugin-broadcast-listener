@@ -14,7 +14,7 @@ public class BroadcastPlugin extends CordovaPlugin {
 
             if (receiver == null) {
                 receiver = new IntentListener();
-                IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN"); // Zebra DataWedge action
+                IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN");
                 cordova.getActivity().registerReceiver(receiver, filter);
             }
 
@@ -33,7 +33,7 @@ public class BroadcastPlugin extends CordovaPlugin {
             return true;
         }
 
-        return false;
+        return false; // Important: return false if action is unrecognized
     }
 
     @Override
