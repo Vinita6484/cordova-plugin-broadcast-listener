@@ -6,6 +6,6 @@
     <source-file src="src/android/com/example/broadcast/IntentListener.java" target-dir="src/com/example/broadcast" />
   </platform>
   <js-module src="www/broadcast.js" name="BroadcastPlugin">
-    <clobbers target="cordova.plugins.BroadcastListener" />
+    <clobbers target="cordova.plugins.BroadcastPlugin" />
   </js-module>
 </plugin>
