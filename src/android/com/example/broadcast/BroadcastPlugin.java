@@ -11,16 +11,28 @@ public class BroadcastPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
         if ("startListening".equals(action)) {
             IntentListener.callbackContext = callbackContext;
+
             if (receiver == null) {
                 receiver = new IntentListener();
                 IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN"); // Zebra DataWedge action
                 cordova.getActivity().registerReceiver(receiver, filter);
             }
+
             PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
             pluginResult.setKeepCallback(true);
             callbackContext.sendPluginResult(pluginResult);
             return true;
         }
+
+        if ("stopListening".equals(action)) {
+            if (receiver != null) {
+                cordova.getActivity().unregisterReceiver(receiver);
+                receiver = null;
+            }
+            callbackContext.success("Stopped listening");
+            return true;
+        }
+
         return false;
     }
 
