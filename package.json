@@ -1,0 +1,26 @@
+{
+  "name": "cordova-plugin-broadcast-listener",
+  "version": "1.0.0",
+  "description": "Cordova plugin to listen for Android broadcast intents",
+  "cordova": {
+    "id": "cordova-plugin-broadcast-listener",
+    "platforms": ["android"]
+  },
+  "keywords": [
+    "cordova",
+    "cordova-android",
+    "broadcast",
+    "listener",
+    "plugin"
+  ],
+  "license": "MIT",
+  "author": "Your Name <your.email@example.com>",
+  "engines": {
+    "cordovaDependencies": {
+      ">=5.0.0": {}
+    }
+  },
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {}
+}
