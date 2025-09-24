@@ -1,10 +1,12 @@
-<plugin id="cordova-plugin-broadcast-listener" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+<plugin id="cordova-plugin-broadcast-listener" version="1.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0">
   <name>BroadcastPlugin</name>
   <description>Listens for Android broadcasts and sends data to JS</description>
+
   <platform name="android">
     <source-file src="src/android/com/example/broadcast/BroadcastPlugin.java" target-dir="src/com/example/broadcast" />
     <source-file src="src/android/com/example/broadcast/IntentListener.java" target-dir="src/com/example/broadcast" />
   </platform>
+
   <js-module src="www/broadcast.js" name="BroadcastPlugin">
     <clobbers target="cordova.plugins.BroadcastPlugin" />
   </js-module>
