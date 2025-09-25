@@ -21,7 +21,6 @@ public class IntentListener extends BroadcastReceiver {
             return;
         }
 
-
         // ✅ Alert: Broadcast received
         sendAlert("Broadcast received");
 
@@ -45,21 +44,15 @@ public class IntentListener extends BroadcastReceiver {
             }
         }
 
-        // ✅ Alert: All extras
+        // ✅ Alert: All extras (generic)
         Bundle extras = intent.getExtras();
-        if (extras != null) {
+        if (extras != null && !extras.isEmpty()) {
             for (String key : extras.keySet()) {
                 Object value = extras.get(key);
                 sendAlert("Extra - " + key + ": " + String.valueOf(value));
             }
-        }
-
-        // ✅ Alert: Specific DataWedge payload
-        String data = intent.getStringExtra("com.symbol.datawedge.data_string");
-        if (data != null) {
-            sendAlert("DataWedge: " + data);
         } else {
-            sendAlert("No DataWedge string found");
+            sendAlert("No extras found in intent");
         }
     }
 
