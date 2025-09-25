@@ -16,27 +16,26 @@ public class IntentListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (callbackContext == null) {
-            PluginResult error = new PluginResult(PluginResult.Status.ERROR, "CallbackContext is null");
-            error.setKeepCallback(true);
+            sendAlert("❌ CallbackContext is null — cannot send result to JavaScript");
             return;
         }
 
-        // ✅ Alert: Broadcast received
-        sendAlert("Broadcast received");
+        String expectedAction = "com.zebra.broadcast.SCAN";
+        String actualAction = intent.getAction();
 
-        // ✅ Alert: Intent action
-        String action = intent.getAction();
-        sendAlert("Action: " + action);
+        sendAlert("📡 Broadcast received");
+        sendAlert("Action: " + actualAction);
 
-        // ✅ Alert: Intent flags
+        if (!expectedAction.equals(actualAction)) {
+            sendAlert("⚠️ Action mismatch: expected '" + expectedAction + "', but received '" + actualAction + "'");
+        }
+
         sendAlert("Flags: " + intent.getFlags());
 
-        // ✅ Alert: Intent data URI
         if (intent.getData() != null) {
             sendAlert("Data URI: " + intent.getData().toString());
         }
 
-        // ✅ Alert: Intent categories
         Set<String> categories = intent.getCategories();
         if (categories != null) {
             for (String category : categories) {
@@ -44,7 +43,6 @@ public class IntentListener extends BroadcastReceiver {
             }
         }
 
-        // ✅ Alert: All extras (generic)
         Bundle extras = intent.getExtras();
         if (extras != null && !extras.isEmpty()) {
             for (String key : extras.keySet()) {
@@ -56,7 +54,6 @@ public class IntentListener extends BroadcastReceiver {
         }
     }
 
-    // 🔧 Helper method to send alerts to JS
     private void sendAlert(String message) {
         PluginResult result = new PluginResult(PluginResult.Status.OK, message);
         result.setKeepCallback(true);
