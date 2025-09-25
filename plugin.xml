@@ -23,6 +23,16 @@
       </feature>
     </config-file>
 
+    <!-- Inject static receiver into AndroidManifest.xml -->
+    <config-file target="AndroidManifest.xml" parent="/application">
+      <receiver android:name="com.example.broadcast.IntentListener"
+                android:exported="true">
+        <intent-filter>
+          <action android:name="com.zebra.broadcast.SCAN" />
+        </intent-filter>
+      </receiver>
+    </config-file>
+
     <!-- Java source files -->
     <source-file src="src/android/com/example/broadcast/BroadcastPlugin.java" target-dir="src/com/example/broadcast" />
     <source-file src="src/android/com/example/broadcast/IntentListener.java" target-dir="src/com/example/broadcast" />
