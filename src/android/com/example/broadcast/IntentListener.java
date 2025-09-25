@@ -12,7 +12,13 @@ public class IntentListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (callbackContext != null) {
-            String data = intent.getStringExtra("com.symbol.datawedge.data_string"); // Adjust key as needed
+            // Send debug alert to JS: Broadcast received
+            PluginResult debugLog = new PluginResult(PluginResult.Status.OK, "Broadcast received");
+            debugLog.setKeepCallback(true);
+            callbackContext.sendPluginResult(debugLog);
+
+            // Extract actual payload
+            String data = intent.getStringExtra("com.symbol.datawedge.data_string");
             PluginResult result = new PluginResult(PluginResult.Status.OK, data);
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
