@@ -3,6 +3,7 @@ package com.example.broadcast;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Build;
+
 import org.apache.cordova.*;
 import org.json.JSONArray;
 
@@ -24,16 +25,14 @@ public class BroadcastPlugin extends CordovaPlugin {
                     cordova.getActivity().registerReceiver(receiver, filter);
                 }
 
-                // Send alert to JS: Receiver registered
-                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "Receiver registered");
-                pluginResult.setKeepCallback(true);
-                callbackContext.sendPluginResult(pluginResult);
+                PluginResult registered = new PluginResult(PluginResult.Status.OK, "Receiver registered");
+                registered.setKeepCallback(true);
+                callbackContext.sendPluginResult(registered);
             }
 
-            // Keep callback alive for future broadcasts
-            PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
-            pluginResult.setKeepCallback(true);
-            callbackContext.sendPluginResult(pluginResult);
+            PluginResult keepAlive = new PluginResult(PluginResult.Status.NO_RESULT);
+            keepAlive.setKeepCallback(true);
+            callbackContext.sendPluginResult(keepAlive);
             return true;
         }
 
