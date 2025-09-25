@@ -20,7 +20,7 @@ public class BroadcastPlugin extends CordovaPlugin {
                 IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN");
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    cordova.getActivity().registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                    cordova.getActivity().registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
                 } else {
                     cordova.getActivity().registerReceiver(receiver, filter);
                 }
