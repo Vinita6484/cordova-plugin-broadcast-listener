@@ -19,10 +19,12 @@ public class BroadcastPlugin extends CordovaPlugin {
                 receiver = new IntentListener();
                 IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN");
 
+                Context context = cordova.getContext(); // ✅ safer application context
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    cordova.getActivity().registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+                    context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
                 } else {
-                    cordova.getActivity().registerReceiver(receiver, filter);
+                    context.registerReceiver(receiver, filter);
                 }
 
                 PluginResult registered = new PluginResult(PluginResult.Status.OK, "Receiver registered");
@@ -38,7 +40,8 @@ public class BroadcastPlugin extends CordovaPlugin {
 
         if ("stopListening".equals(action)) {
             if (receiver != null) {
-                cordova.getActivity().unregisterReceiver(receiver);
+                Context context = cordova.getContext();
+                context.unregisterReceiver(receiver);
                 receiver = null;
             }
             callbackContext.success("Stopped listening");
@@ -51,7 +54,8 @@ public class BroadcastPlugin extends CordovaPlugin {
     @Override
     public void onDestroy() {
         if (receiver != null) {
-            cordova.getActivity().unregisterReceiver(receiver);
+            Context context = cordova.getContext();
+            context.unregisterReceiver(receiver);
             receiver = null;
         }
     }
