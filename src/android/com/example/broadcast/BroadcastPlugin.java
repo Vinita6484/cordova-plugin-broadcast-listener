@@ -23,8 +23,14 @@ public class BroadcastPlugin extends CordovaPlugin {
                 } else {
                     cordova.getActivity().registerReceiver(receiver, filter);
                 }
+
+                // Send alert to JS: Receiver registered
+                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "Receiver registered");
+                pluginResult.setKeepCallback(true);
+                callbackContext.sendPluginResult(pluginResult);
             }
 
+            // Keep callback alive for future broadcasts
             PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
             pluginResult.setKeepCallback(true);
             callbackContext.sendPluginResult(pluginResult);
