@@ -26,15 +26,16 @@
     <!-- Java source files -->
     <source-file src="src/android/com/example/broadcast/BroadcastPlugin.java" target-dir="src/com/example/broadcast" />
     <source-file src="src/android/com/example/broadcast/IntentListener.java" target-dir="src/com/example/broadcast" />
-
     <!-- Inject broadcast receiver into AndroidManifest -->
-    <config-file target="AndroidManifest.xml" parent="application">
+    <!-- Removing the config-file -->
+    
+    <!-- <config-file target="AndroidManifest.xml" parent="application">
       <receiver android:exported="true" android:name="com.example.broadcast.IntentListener">
         <intent-filter>
           <action android:name="com.example.broadcast.SCAN" />
           <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
       </receiver>
-    </config-file>
+    </config-file> -->
   </platform>
 </plugin>
