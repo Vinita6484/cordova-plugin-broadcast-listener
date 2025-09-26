@@ -12,54 +12,56 @@ import org.apache.cordova.CallbackContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Set;
-
 public class IntentListener extends BroadcastReceiver {
     private static final String TAG = "IntentListener";
-    
-    // FIX 1: Make references non-static and private
+
     private CordovaInterface cordova;
     private CallbackContext callbackContext;
-    private boolean isRegistered = false; // Used by the main plugin class
+    private boolean isRegistered = false;
 
-    // Setters injected by BroadcastPlugin.java
     public void setCordovaContext(CordovaInterface cordova, CallbackContext callbackContext) {
         this.cordova = cordova;
         this.callbackContext = callbackContext;
+        Log.d(TAG, "Cordova context and callback set");
     }
 
     public void setRegistered(boolean registered) {
         this.isRegistered = registered;
+        Log.d(TAG, "Receiver registration flag set to: " + registered);
     }
-    
+
     public boolean isRegistered() {
         return isRegistered;
     }
-    
+
     public CallbackContext getCallbackContext() {
         return callbackContext;
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Check for null context/callback immediately
+        Log.d(TAG, "onReceive triggered");
+
         if (callbackContext == null || cordova == null) {
-            Log.w(TAG, "CallbackContext is null. Cannot send result to JavaScript.");
+            Log.w(TAG, "CallbackContext or CordovaInterface is null. Cannot send result to JavaScript.");
             return;
         }
 
-        // FIX 2: All Cordova results MUST run on the UI thread
+        Log.d(TAG, "Processing intent on UI thread");
         cordova.getActivity().runOnUiThread(() -> {
             try {
-                // FIX 3: Process Intent data into a structured JSON object
                 JSONObject result = new JSONObject();
-                
+
                 String actualAction = intent.getAction();
                 result.put("action", actualAction);
                 result.put("flags", intent.getFlags());
-                
+                Log.d(TAG, "Intent action: " + actualAction);
+                Log.d(TAG, "Intent flags: " + intent.getFlags());
+
                 if (intent.getData() != null) {
-                    result.put("dataUri", intent.getData().toString());
+                    String dataUri = intent.getData().toString();
+                    result.put("dataUri", dataUri);
+                    Log.d(TAG, "Intent data URI: " + dataUri);
                 }
 
                 JSONObject extrasJson = new JSONObject();
@@ -67,24 +69,28 @@ public class IntentListener extends BroadcastReceiver {
                 if (extras != null) {
                     for (String key : extras.keySet()) {
                         Object value = extras.get(key);
-                        // JSONObject.wrap handles basic types and converts them safely
-                        extrasJson.put(key, JSONObject.wrap(value)); 
+                        extrasJson.put(key, JSONObject.wrap(value));
+                        Log.d(TAG, "Extra key: " + key + ", value: " + value);
                     }
+                } else {
+                    Log.d(TAG, "No extras found in intent");
                 }
+
                 result.put("extras", extrasJson);
-                
-                // Send the structured JSON object back to JavaScript
+                Log.d(TAG, "Final JSON payload: " + result.toString());
+
                 PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
-                pluginResult.setKeepCallback(true); // Keep the connection open
+                pluginResult.setKeepCallback(true);
                 callbackContext.sendPluginResult(pluginResult);
+                Log.d(TAG, "PluginResult sent to JavaScript");
 
             } catch (JSONException e) {
-                Log.e(TAG, "Error packaging intent data into JSON: " + e.getMessage());
-                
-                // Send an error result if JSON creation fails
+                Log.e(TAG, "Error packaging intent data into JSON: " + e.getMessage(), e);
+
                 PluginResult errorResult = new PluginResult(PluginResult.Status.ERROR, "Failed to package intent data.");
                 errorResult.setKeepCallback(true);
                 callbackContext.sendPluginResult(errorResult);
+                Log.d(TAG, "Error PluginResult sent to JavaScript");
             }
         });
     }
