@@ -31,7 +31,7 @@
     <config-file target="AndroidManifest.xml" parent="application">
       <receiver android:exported="true" android:name="com.example.broadcast.IntentListener">
         <intent-filter>
-          <action android:name="com.zebra.broadcast.SCAN" />
+          <action android:name="com.example.broadcast.SCAN" />
           <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
       </receiver>
