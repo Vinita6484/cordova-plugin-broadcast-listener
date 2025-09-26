@@ -3,47 +3,57 @@ package com.example.broadcast;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.util.Log;
 
 import org.apache.cordova.*;
 import org.json.JSONArray;
 
 public class BroadcastPlugin extends CordovaPlugin {
+    private static final String TAG = "BroadcastPlugin";
     private IntentListener receiver;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
+        Log.d(TAG, "execute called with action: " + action);
+
         if ("startListening".equals(action)) {
-            // CRITICAL FIX: Set the non-static callback on the receiver instance
+            Log.d(TAG, "startListening invoked");
+
             if (receiver == null) {
                 receiver = new IntentListener();
+                Log.d(TAG, "Created new IntentListener instance");
             }
-            // 1. Pass a reference to the main plugin instance and the callback context
-            receiver.setCordovaContext(this.cordova, callbackContext); 
+
+            receiver.setCordovaContext(this.cordova, callbackContext);
 
             if (!receiver.isRegistered()) {
+                Log.d(TAG, "Receiver not registered yet, proceeding to register");
+
                 IntentFilter filter = new IntentFilter("com.example.broadcast.SCAN");
+                Context context = cordova.getActivity().getApplicationContext();
 
-                // FIX: Use Application Context for safety
-                Context context = cordova.getActivity().getApplicationContext(); 
-
-                // Use a private field or check in receiver to see if it's registered
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+                        Log.d(TAG, "Receiver registered with RECEIVER_EXPORTED");
                     } else {
                         context.registerReceiver(receiver, filter);
+                        Log.d(TAG, "Receiver registered normally");
                     }
-                    receiver.setRegistered(true);
 
-                    // Send initial success and keep callback alive
+                    receiver.setRegistered(true);
+                    Log.d(TAG, "Receiver registration flag set to true");
+
                     PluginResult registered = new PluginResult(PluginResult.Status.NO_RESULT);
-                    registered.setKeepCallback(true); 
+                    registered.setKeepCallback(true);
                     callbackContext.sendPluginResult(registered);
+                    Log.d(TAG, "Callback kept alive after registration");
                 } catch (Exception e) {
+                    Log.e(TAG, "Failed to register receiver: " + e.getMessage(), e);
                     callbackContext.error("Failed to register receiver: " + e.getMessage());
                 }
             } else {
-                // If already registered, just keep the callback alive (might update it)
+                Log.d(TAG, "Receiver already registered, keeping callback alive");
                 PluginResult keepAlive = new PluginResult(PluginResult.Status.NO_RESULT);
                 keepAlive.setKeepCallback(true);
                 callbackContext.sendPluginResult(keepAlive);
@@ -52,34 +62,41 @@ public class BroadcastPlugin extends CordovaPlugin {
         }
 
         if ("stopListening".equals(action)) {
+            Log.d(TAG, "stopListening invoked");
+
             if (receiver != null && receiver.isRegistered()) {
-                // FIX: Use Application Context for consistency
-                Context context = cordova.getActivity().getApplicationContext(); 
+                Context context = cordova.getActivity().getApplicationContext();
                 context.unregisterReceiver(receiver);
                 receiver.setRegistered(false);
+                Log.d(TAG, "Receiver unregistered");
             }
-            // IMPORTANT: End the callback when stopping
+
             if (receiver != null && receiver.getCallbackContext() != null) {
                 receiver.getCallbackContext().success("Stopped listening");
+                Log.d(TAG, "CallbackContext notified of stop");
             }
-            // receiver = null; // Can optionally null out the receiver here
+
             return true;
         }
 
+        Log.w(TAG, "Unknown action received: " + action);
         return false;
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy called");
+
         if (receiver != null && receiver.isRegistered()) {
-            // FIX: Use Application Context for consistency
-            Context context = cordova.getActivity().getApplicationContext(); 
+            Context context = cordova.getActivity().getApplicationContext();
             context.unregisterReceiver(receiver);
             receiver.setRegistered(false);
+            Log.d(TAG, "Receiver unregistered during onDestroy");
         }
-        // IMPORTANT: Clean up the callback if the plugin is destroyed
+
         if (receiver != null && receiver.getCallbackContext() != null) {
             receiver.getCallbackContext().success("Plugin destroyed.");
+            Log.d(TAG, "CallbackContext notified of plugin destruction");
         }
     }
 }
