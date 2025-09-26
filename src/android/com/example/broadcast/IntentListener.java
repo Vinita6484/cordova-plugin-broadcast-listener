@@ -20,7 +20,7 @@ public class IntentListener extends BroadcastReceiver {
             return;
         }
 
-        String expectedAction = "com.zebra.broadcast.SCAN";
+        String expectedAction = "com.example.broadcast.SCAN";
         String actualAction = intent.getAction();
 
         sendAlert("📡 Broadcast received");
