@@ -17,7 +17,7 @@ public class BroadcastPlugin extends CordovaPlugin {
 
             if (receiver == null) {
                 receiver = new IntentListener();
-                IntentFilter filter = new IntentFilter("com.zebra.broadcast.SCAN");
+                IntentFilter filter = new IntentFilter("com.example.broadcast.SCAN");
 
                 Context context = cordova.getContext(); // ✅ safer application context
 
