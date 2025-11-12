@@ -1,5 +1,5 @@
 {
-  "name": "cordova-plugin-broadcast-listener",
+  "name": "@example/cordova-plugin-broadcast-listener",
   "version": "1.0.0",
   "description": "Cordova plugin to listen for Android broadcast intents",
   "cordova": {

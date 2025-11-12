@@ -12,9 +12,14 @@ public class BroadcastPlugin extends CordovaPlugin {
     private static final String TAG = "BroadcastPlugin";
     private IntentListener receiver;
 
+    private String sanitizeForLog(String input) {
+        if (input == null) return "null";
+        return input.replaceAll("[\r\n\t]", "_");
+    }
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
-        Log.d(TAG, "execute called with action: " + action);
+        Log.d(TAG, "execute called with action: " + sanitizeForLog(action));
 
         if ("startListening".equals(action)) {
             Log.d(TAG, "startListening invoked");
@@ -79,24 +84,46 @@ public class BroadcastPlugin extends CordovaPlugin {
             return true;
         }
 
-        Log.w(TAG, "Unknown action received: " + action);
+        Log.w(TAG, "Unknown action received: " + sanitizeForLog(action));
         return false;
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy called");
+        cleanupReceiver();
+    }
 
-        if (receiver != null && receiver.isRegistered()) {
+    private void cleanupReceiver() {
+        if (receiver == null) return;
+        
+        if (receiver.isRegistered()) {
+            unregisterReceiver();
+        }
+        
+        notifyCallbackOfDestruction();
+    }
+
+    private void unregisterReceiver() {
+        try {
             Context context = cordova.getActivity().getApplicationContext();
             context.unregisterReceiver(receiver);
             receiver.setRegistered(false);
             Log.d(TAG, "Receiver unregistered during onDestroy");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister receiver during onDestroy: " + e.getMessage(), e);
+            receiver.setRegistered(false);
         }
+    }
 
-        if (receiver != null && receiver.getCallbackContext() != null) {
+    private void notifyCallbackOfDestruction() {
+        if (receiver.getCallbackContext() == null) return;
+        
+        try {
             receiver.getCallbackContext().success("Plugin destroyed.");
             Log.d(TAG, "CallbackContext notified of plugin destruction");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to notify callback context during onDestroy: " + e.getMessage(), e);
         }
     }
 }
