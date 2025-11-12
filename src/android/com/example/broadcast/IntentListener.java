@@ -20,6 +20,10 @@ public class IntentListener extends BroadcastReceiver {
     private boolean isRegistered = false;
 
     public void setCordovaContext(CordovaInterface cordova, CallbackContext callbackContext) {
+        if (cordova == null || callbackContext == null) {
+            Log.e(TAG, "Cannot set null cordova interface or callback context");
+            throw new IllegalArgumentException("CordovaInterface and CallbackContext cannot be null");
+        }
         this.cordova = cordova;
         this.callbackContext = callbackContext;
         Log.d(TAG, "Cordova context and callback set");
@@ -55,8 +59,10 @@ public class IntentListener extends BroadcastReceiver {
                 String actualAction = intent.getAction();
                 result.put("action", actualAction);
                 result.put("flags", intent.getFlags());
-                Log.d(TAG, "Intent action: " + actualAction);
-                Log.d(TAG, "Intent flags: " + intent.getFlags());
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(TAG, "Intent action: " + actualAction);
+                    Log.d(TAG, "Intent flags: " + intent.getFlags());
+                }
 
                 if (intent.getData() != null) {
                     String dataUri = intent.getData().toString();
@@ -70,14 +76,14 @@ public class IntentListener extends BroadcastReceiver {
                     for (String key : extras.keySet()) {
                         Object value = extras.get(key);
                         extrasJson.put(key, JSONObject.wrap(value));
-                        Log.d(TAG, "Extra key: " + key + ", value: " + value);
                     }
+                    Log.d(TAG, "Processed " + extras.size() + " extras");
                 } else {
                     Log.d(TAG, "No extras found in intent");
                 }
 
                 result.put("extras", extrasJson);
-                Log.d(TAG, "Final JSON payload: " + result.toString());
+                Log.d(TAG, "JSON payload prepared for transmission");
 
                 PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
                 pluginResult.setKeepCallback(true);
